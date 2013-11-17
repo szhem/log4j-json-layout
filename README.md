@@ -1,4 +1,4 @@
-## Log4J Layout to Format Logs According to the Logstash Json Format
+## Logstash Log4J Layout
 
 1. [What is it?](#what-is-it)
 2. [How to use?](#how-to-use)
