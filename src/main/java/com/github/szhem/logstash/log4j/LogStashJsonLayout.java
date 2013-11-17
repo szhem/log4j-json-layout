@@ -271,8 +271,7 @@ public class LogStashJsonLayout extends Layout {
     private boolean appendSourcePath(StringBuilder buf, LoggingEvent event) {
         if (!pathResolved) {
             @SuppressWarnings("unchecked")
-            Enumeration<Appender> appenders = event.getLogger().getAllAppenders();
-            Appender appender = findLayoutAppender(appenders);
+            Appender appender = findLayoutAppender(event.getLogger().getAllAppenders());
             if (!(appender instanceof FileAppender)) {
                 return false;
             }
@@ -288,7 +287,12 @@ public class LogStashJsonLayout extends Layout {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     private Appender findLayoutAppender(Enumeration<Appender> appenders) {
+        if(appenders == null) {
+            return null;
+        }
+
         while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
             // get the first appender with this layout instance and ignore others;
@@ -297,9 +301,8 @@ public class LogStashJsonLayout extends Layout {
                 return appender;
             }
             if (appender instanceof AppenderAttachable) {
-                @SuppressWarnings("unchecked")
-                Enumeration<Appender> appenderAppenders = AppenderAttachable.class.cast(appender).getAllAppenders();
-                return findLayoutAppender(appenderAppenders);
+                AppenderAttachable appenderContainer = (AppenderAttachable) appender;
+                return findLayoutAppender(appenderContainer.getAllAppenders());
             }
         }
         return null;

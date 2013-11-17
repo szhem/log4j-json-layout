@@ -13,7 +13,6 @@
  */
 package com.github.szhem.logstash.log4j;
 
-import com.github.szhem.logstash.log4j.LogStashJsonLayout;
 import com.jayway.jsonassert.JsonAsserter;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
