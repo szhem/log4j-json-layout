@@ -34,13 +34,13 @@ By default the following fields are logged:
             "mdc_key_1": "mdc_val_1"
         },
         "ndc": "ndc_1 ndc_2 ndc_3",
-        "source_host": "szhem-nb",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
     }
 
-If there is an exception the logged message will look like the following one:
+If there is an exception, the logged message will look like the following one:
 
     {
         "exception": {
@@ -51,7 +51,7 @@ If there is an exception the logged message will look like the following one:
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "szhem-nb",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -78,7 +78,7 @@ After that the location will be available in the message
         },
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "szhem-nb",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -96,7 +96,8 @@ Included and excluded fields can be combined together
 
 #### Adding tags and fields
 
-Additional fields and tags which must be included into the logged message can be specified like this:
+Additional fields and tags which must be included into the logged message can be specified with `tags` and `fields`
+configuration properties of the layout:
 
     log4j.rootLogger = INFO, stdout
 
@@ -105,10 +106,25 @@ Additional fields and tags which must be included into the logged message can be
     log4j.appender.stdout.layout.tags=spring,logstash
     log4j.appender.stdout.layout.fields=type:log4j,format:json
 
+The message will look like the following one:
+
+    {
+        "format": "json",
+        "type": "log4j",
+        "level": "INFO",
+        "logger": "root",
+        "message": "Hello World",
+        "source_host": "vm",
+        "tags": ["spring", "logstash"],
+        "@timestamp": "2013-11-17T11:03:02.025Z",
+        "thread": "main",
+        "@version": "1"
+    }
+
 #### Logging source path
 
-If the layout is configured with an instance of `FileAppender` or any of its subclasses then the path of the file the
-log messages are sent to will also be included into the message:
+If the layout is configured with an instance of `FileAppender` or any of its subclasses then the path of the file, the
+log messages are sent to, will also be included into the message:
 
     log4j.appender.out=org.apache.log4j.RollingFileAppender
     log4j.appender.out.layout=com.github.szhem.logstash.log4j.LogStashJsonLayout
@@ -123,7 +139,7 @@ With such a configuration the message will contain additional `source_path` fiel
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "szhem-nb",
+        "source_host": "vm",
         "source_path": "/tmp/logger.log",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
