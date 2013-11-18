@@ -74,14 +74,14 @@ public class LogStashJsonLayout extends Layout {
 
     private static enum Field {
         EXCEPTION("exception"),
+        HOST("host"),
         LEVEL("level"),
         LOCATION("location"),
         LOGGER("logger"),
         MESSAGE("message"),
         MDC("mdc"),
         NDC("ndc"),
-        SOURCE_HOST("source_host"),
-        SOURCE_PATH("source_path"),
+        PATH("path"),
         TAGS("tags"),
         TIMESTAMP("@timestamp"),
         THREAD("thread"),
@@ -121,6 +121,7 @@ public class LogStashJsonLayout extends Layout {
     private String path;
     private boolean pathResolved;
     private String hostName;
+    private boolean ignoresThrowable;
 
     public LogStashJsonLayout() {
         fields = new HashMap<String, String>();
@@ -150,6 +151,14 @@ public class LogStashJsonLayout extends Layout {
             buf.append(',');
         }
         hasPrevField = appendFields(buf, event);
+
+        if (renderedFields.contains(Field.HOST)) {
+            if (hasPrevField) {
+                buf.append(',');
+            }
+            appendField(buf, Field.HOST.val, hostName);
+            hasPrevField = true;
+        }
 
         if (renderedFields.contains(Field.LEVEL)) {
             if (hasPrevField) {
@@ -200,15 +209,7 @@ public class LogStashJsonLayout extends Layout {
             }
         }
 
-        if (renderedFields.contains(Field.SOURCE_HOST)) {
-            if (hasPrevField) {
-                buf.append(',');
-            }
-            appendField(buf, Field.SOURCE_HOST.val, hostName);
-            hasPrevField = true;
-        }
-
-        if (renderedFields.contains(Field.SOURCE_PATH)) {
+        if (renderedFields.contains(Field.PATH)) {
             if (hasPrevField) {
                 buf.append(',');
             }
@@ -281,7 +282,7 @@ public class LogStashJsonLayout extends Layout {
             pathResolved = true;
         }
         if (path != null) {
-            appendField(buf, Field.SOURCE_PATH.val, path);
+            appendField(buf, Field.PATH.val, path);
             return true;
         }
         return false;
@@ -463,7 +464,7 @@ public class LogStashJsonLayout extends Layout {
 
     @Override
     public boolean ignoresThrowable() {
-        return !renderedFields.contains(Field.EXCEPTION);
+        return ignoresThrowable;
     }
 
     @Override
@@ -498,6 +499,7 @@ public class LogStashJsonLayout extends Layout {
                 LogLog.error("Unable to determine name of the localhost", e);
             }
         }
+        ignoresThrowable = !renderedFields.contains(Field.EXCEPTION);
     }
 
     @Override
