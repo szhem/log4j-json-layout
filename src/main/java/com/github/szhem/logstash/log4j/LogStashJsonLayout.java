@@ -74,14 +74,14 @@ public class LogStashJsonLayout extends Layout {
 
     private static enum Field {
         EXCEPTION("exception"),
-        HOST("host"),
         LEVEL("level"),
         LOCATION("location"),
         LOGGER("logger"),
         MESSAGE("message"),
         MDC("mdc"),
         NDC("ndc"),
-        PATH("path"),
+        SOURCE_HOST("source_host"),
+        SOURCE_PATH("source_path"),
         TAGS("tags"),
         TIMESTAMP("@timestamp"),
         THREAD("thread"),
@@ -152,14 +152,6 @@ public class LogStashJsonLayout extends Layout {
         }
         hasPrevField = appendFields(buf, event);
 
-        if (renderedFields.contains(Field.HOST)) {
-            if (hasPrevField) {
-                buf.append(',');
-            }
-            appendField(buf, Field.HOST.val, hostName);
-            hasPrevField = true;
-        }
-
         if (renderedFields.contains(Field.LEVEL)) {
             if (hasPrevField) {
                 buf.append(',');
@@ -209,7 +201,15 @@ public class LogStashJsonLayout extends Layout {
             }
         }
 
-        if (renderedFields.contains(Field.PATH)) {
+        if (renderedFields.contains(Field.SOURCE_HOST)) {
+            if (hasPrevField) {
+                buf.append(',');
+            }
+            appendField(buf, Field.SOURCE_HOST.val, hostName);
+            hasPrevField = true;
+        }
+
+        if (renderedFields.contains(Field.SOURCE_PATH)) {
             if (hasPrevField) {
                 buf.append(',');
             }
@@ -282,7 +282,7 @@ public class LogStashJsonLayout extends Layout {
             pathResolved = true;
         }
         if (path != null) {
-            appendField(buf, Field.PATH.val, path);
+            appendField(buf, Field.SOURCE_PATH.val, path);
             return true;
         }
         return false;

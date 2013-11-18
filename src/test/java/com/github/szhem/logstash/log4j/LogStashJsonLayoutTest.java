@@ -94,8 +94,8 @@ public class LogStashJsonLayoutTest {
             .assertThat("$.mdc.mdc_key_2", equalTo("mdc_val_2"))
             .assertThat("$.message", equalTo("Hello World"))
             .assertThat("$.ndc", equalTo("ndc_1 ndc_2 ndc_3"))
-            .assertThat("$.path", nullValue())
-            .assertThat("$.host", equalTo(InetAddress.getLocalHost().getHostName()))
+            .assertThat("$.source_path", nullValue())
+            .assertThat("$.source_host", equalTo(InetAddress.getLocalHost().getHostName()))
             .assertThat("$.tags", nullValue())
             .assertThat("$.thread", equalTo(Thread.currentThread().getName()))
             .assertThat("$.@timestamp", notNullValue())
@@ -140,8 +140,8 @@ public class LogStashJsonLayoutTest {
             .assertThat("$.mdc", nullValue())
             .assertThat("$.message", equalTo("Hello World"))
             .assertThat("$.ndc", nullValue())
-            .assertThat("$.path", nullValue())
-            .assertThat("$.host", equalTo(InetAddress.getLocalHost().getHostName()))
+            .assertThat("$.source_path", nullValue())
+            .assertThat("$.source_host", equalTo(InetAddress.getLocalHost().getHostName()))
             .assertThat("$.tags", nullValue())
             .assertThat("$.thread", equalTo(Thread.currentThread().getName()))
             .assertThat("$.@timestamp", notNullValue())
@@ -173,7 +173,7 @@ public class LogStashJsonLayoutTest {
     @Test
     public void testSourcePath() throws Exception {
         logger.info("Hello World!");
-        with(consoleWriter.toString()).assertThat("$.path", nullValue());
+        with(consoleWriter.toString()).assertThat("$.source_path", nullValue());
 
         // for the file appender there must be log file path in the json
         StringWriter fileWriter = new StringWriter();
@@ -192,7 +192,7 @@ public class LogStashJsonLayoutTest {
 
         logger.info("Hello World!");
         with(fileWriter.toString())
-            .assertThat("$.path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
+            .assertThat("$.source_path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
     }
 
     @Test

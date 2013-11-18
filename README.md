@@ -26,7 +26,6 @@ It is possible to select what fields should be included or excluded from the log
 By default the following fields are logged:
 
     {
-        "host": "vm",
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
@@ -35,6 +34,7 @@ By default the following fields are logged:
             "mdc_key_1": "mdc_val_1"
         },
         "ndc": "ndc_1 ndc_2 ndc_3",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -48,10 +48,10 @@ If there is an exception, the logged message will look like the following one:
             "class": "java.lang.RuntimeException",
             "stacktrace": "java.lang.RuntimeException: Test Exception\n\tat com.github.szhem.logstash.log4j.LogStashJsonLayoutTest.testSourcePath(LogStashJsonLayoutTest.java:193)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:601)\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\n\tat org.junit.rules.TestWatcher$1.evaluate(TestWatcher.java:55)\n\tat org.junit.rules.RunRules.evaluate(RunRules.java:20)\n\tat org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)\n\tat org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)\n\tat org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:309)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:160)\n\tat com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:76)\n\tat com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:195)\n\tat com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:63)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:601)\n\tat com.intellij.rt.execution.application.AppMain.main(AppMain.java:120)"
         },
-        "host": "vm",
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -69,7 +69,6 @@ property to specify the required fields to be included into the message
 After that the location will be available in the message
 
     {
-        "host": "vm",
         "level": "ERROR",
         "location": {
             "class": "com.github.szhem.logstash.log4j.LogStashJsonLayoutTest",
@@ -79,6 +78,7 @@ After that the location will be available in the message
         },
         "logger": "root",
         "message": "Hello World!",
+        "source_host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -111,10 +111,10 @@ The message will look like the following one:
     {
         "format": "json",
         "type": "log4j",
-        "host": "vm",
         "level": "INFO",
         "logger": "root",
         "message": "Hello World",
+        "source_host": "vm",
         "tags": ["spring", "logstash"],
         "@timestamp": "2013-11-17T11:03:02.025Z",
         "thread": "main",
@@ -133,14 +133,14 @@ log messages are sent to, will also be included into the message:
     log4j.appender.out.maxFileSize=100MB
     log4j.appender.out.maxBackupIndex=10
 
-With such a configuration the message will contain additional `path` field
+With such a configuration the message will contain additional `source_path` field
 
     {
-        "host": "vm",
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
-        "path": "/tmp/logger.log",
+        "source_host": "vm",
+        "source_path": "/tmp/logger.log",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
