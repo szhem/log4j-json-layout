@@ -342,8 +342,7 @@ public class LogStashJsonLayout extends Layout {
     }
 
     private boolean appendMDC(StringBuilder buf, LoggingEvent event) {
-        @SuppressWarnings("unchecked")
-        Map<String, String> entries = event.getProperties();
+        Map<?, ?> entries = event.getProperties();
         if (entries.isEmpty()) {
             return false;
         }
@@ -351,8 +350,8 @@ public class LogStashJsonLayout extends Layout {
         appendQuotedName(buf, Field.MDC.val);
         buf.append(":{");
 
-        for (Iterator<Map.Entry<String, String>> iter = entries.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<String, String> entry = iter.next();
+        for (Iterator<? extends Map.Entry<?, ?>> iter = entries.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry<?, ?> entry = iter.next();
             appendField(buf, entry.getKey(), entry.getValue());
             if (iter.hasNext()) {
                 buf.append(',');
@@ -507,13 +506,15 @@ public class LogStashJsonLayout extends Layout {
         return "application/json";
     }
 
-    private void appendQuotedName(StringBuilder out, String name) {
-        out.append('\"').append(name).append('\"');
+    private void appendQuotedName(StringBuilder out, Object name) {
+        out.append('\"');
+        appendValue(out, String.valueOf(name));
+        out.append('\"');
     }
 
-    private void appendQuotedValue(StringBuilder out, String val) {
+    private void appendQuotedValue(StringBuilder out, Object val) {
         out.append('\"');
-        appendValue(out, val);
+        appendValue(out, String.valueOf(val));
         out.append('\"');
     }
 
@@ -523,7 +524,7 @@ public class LogStashJsonLayout extends Layout {
         }
     }
 
-    private void appendField(StringBuilder out, String name, String val) {
+    private void appendField(StringBuilder out, Object name, Object val) {
         appendQuotedName(out, name);
         out.append(':');
         appendQuotedValue(out, val);

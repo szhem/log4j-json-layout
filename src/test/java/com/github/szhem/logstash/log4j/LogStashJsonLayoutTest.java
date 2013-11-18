@@ -70,8 +70,11 @@ public class LogStashJsonLayoutTest {
         NDC.push("ndc_1");
         NDC.push("ndc_2");
         NDC.push("ndc_3");
-        MDC.put("mdc_key_1", "mdc_val_1");
-        MDC.put("mdc_key_2", "mdc_val_2");
+
+        MDC.put("mdc_key_1", "1");
+        MDC.put("mdc_key_2", 2L);
+        MDC.put("mdc_key_3", 3);
+        MDC.put("mdc_key_4", 4.1);
 
         @SuppressWarnings("ThrowableInstanceNeverThrown")
         RuntimeException exception = new RuntimeException("Hello World Exception");
@@ -90,8 +93,10 @@ public class LogStashJsonLayoutTest {
             .assertThat("$.level", equalTo("ERROR"))
             .assertThat("$.location", nullValue())
             .assertThat("$.logger", equalTo(logger.getName()))
-            .assertThat("$.mdc.mdc_key_1", equalTo("mdc_val_1"))
-            .assertThat("$.mdc.mdc_key_2", equalTo("mdc_val_2"))
+            .assertThat("$.mdc.mdc_key_1", equalTo("1"))
+            .assertThat("$.mdc.mdc_key_2", equalTo("2"))
+            .assertThat("$.mdc.mdc_key_3", equalTo("3"))
+            .assertThat("$.mdc.mdc_key_4", equalTo("4.1"))
             .assertThat("$.message", equalTo("Hello World"))
             .assertThat("$.ndc", equalTo("ndc_1 ndc_2 ndc_3"))
             .assertThat("$.source_path", nullValue())
