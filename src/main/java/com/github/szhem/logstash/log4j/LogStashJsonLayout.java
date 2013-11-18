@@ -14,6 +14,7 @@
 package com.github.szhem.logstash.log4j;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.Category;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.helpers.LogLog;
@@ -272,13 +273,11 @@ public class LogStashJsonLayout extends Layout {
     private boolean appendSourcePath(StringBuilder buf, LoggingEvent event) {
         if (!pathResolved) {
             @SuppressWarnings("unchecked")
-            Appender appender = findLayoutAppender(event.getLogger().getAllAppenders());
-            if (!(appender instanceof FileAppender)) {
-                return false;
+            Appender appender = findLayoutAppender(event.getLogger());
+            if (appender instanceof FileAppender) {
+                FileAppender fileAppender = (FileAppender) appender;
+                path = getAppenderPath(fileAppender);
             }
-
-            FileAppender fileAppender = (FileAppender) appender;
-            path = getAppenderPath(fileAppender);
             pathResolved = true;
         }
         if (path != null) {
@@ -288,8 +287,22 @@ public class LogStashJsonLayout extends Layout {
         return false;
     }
 
+    private Appender findLayoutAppender(Category logger) {
+        if(logger == null) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        Appender appender = findLayoutAppender(logger.getAllAppenders());
+        if(appender != null) {
+            return appender;
+        }
+
+        return findLayoutAppender(logger.getParent());
+    }
+
     @SuppressWarnings("unchecked")
-    private Appender findLayoutAppender(Enumeration<Appender> appenders) {
+    private Appender findLayoutAppender(Enumeration<? extends Appender> appenders) {
         if(appenders == null) {
             return null;
         }
