@@ -288,17 +288,14 @@ public class LogStashJsonLayout extends Layout {
     }
 
     private Appender findLayoutAppender(Category logger) {
-        if(logger == null) {
-            return null;
+        for(Category parent = logger; parent != null; parent = logger.getParent()) {
+            @SuppressWarnings("unchecked")
+            Appender appender = findLayoutAppender(parent.getAllAppenders());
+            if(appender != null) {
+                return appender;
+            }
         }
-
-        @SuppressWarnings("unchecked")
-        Appender appender = findLayoutAppender(logger.getAllAppenders());
-        if(appender != null) {
-            return appender;
-        }
-
-        return findLayoutAppender(logger.getParent());
+        return null;
     }
 
     @SuppressWarnings("unchecked")

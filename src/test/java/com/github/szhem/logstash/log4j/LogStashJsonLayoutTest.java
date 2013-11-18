@@ -201,6 +201,34 @@ public class LogStashJsonLayoutTest {
     }
 
     @Test
+    public void testParentLoggerSourcePath() throws Exception {
+        logger.info("Hello World!");
+        with(consoleWriter.toString()).assertThat("$.source_path", nullValue());
+
+        // for the file appender there must be log file path in the json
+        StringWriter fileWriter = new StringWriter();
+
+        LogStashJsonLayout fileLayout = new LogStashJsonLayout();
+        fileLayout.activateOptions();
+
+        FileAppender fileAppender = spy(new FileAppender());
+        doNothing().when(fileAppender).activateOptions();
+        fileAppender.setWriter(fileWriter);
+        fileAppender.setFile("/tmp/logger.log");
+        fileAppender.setLayout(fileLayout);
+        fileAppender.activateOptions();
+
+        logger.addAppender(fileAppender);
+
+        Logger testLogger = Logger.getLogger(getClass());
+        testLogger.setLevel(Level.INFO);
+
+        testLogger.info("Hello World!");
+        with(fileWriter.toString())
+            .assertThat("$.source_path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
+    }
+
+    @Test
     public void testEscape() throws Exception {
         logger.info("H\"e\\l/\nl\ro\u0000W\bo\tr\fl\u0001d");
 
