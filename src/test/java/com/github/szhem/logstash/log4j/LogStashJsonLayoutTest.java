@@ -99,8 +99,8 @@ public class LogStashJsonLayoutTest {
             .assertThat("$.mdc.mdc_key_4", equalTo("4.1"))
             .assertThat("$.message", equalTo("Hello World"))
             .assertThat("$.ndc", equalTo("ndc_1 ndc_2 ndc_3"))
-            .assertThat("$.source_path", nullValue())
-            .assertThat("$.source_host", equalTo(InetAddress.getLocalHost().getHostName()))
+            .assertThat("$.path", nullValue())
+            .assertThat("$.host", equalTo(InetAddress.getLocalHost().getHostName()))
             .assertThat("$.tags", nullValue())
             .assertThat("$.thread", equalTo(Thread.currentThread().getName()))
             .assertThat("$.@timestamp", notNullValue())
@@ -145,8 +145,8 @@ public class LogStashJsonLayoutTest {
             .assertThat("$.mdc", nullValue())
             .assertThat("$.message", equalTo("Hello World"))
             .assertThat("$.ndc", nullValue())
-            .assertThat("$.source_path", nullValue())
-            .assertThat("$.source_host", equalTo(InetAddress.getLocalHost().getHostName()))
+            .assertThat("$.path", nullValue())
+            .assertThat("$.host", equalTo(InetAddress.getLocalHost().getHostName()))
             .assertThat("$.tags", nullValue())
             .assertThat("$.thread", equalTo(Thread.currentThread().getName()))
             .assertThat("$.@timestamp", notNullValue())
@@ -178,7 +178,7 @@ public class LogStashJsonLayoutTest {
     @Test
     public void testSourcePath() throws Exception {
         logger.info("Hello World!");
-        with(consoleWriter.toString()).assertThat("$.source_path", nullValue());
+        with(consoleWriter.toString()).assertThat("$.path", nullValue());
 
         // for the file appender there must be log file path in the json
         StringWriter fileWriter = new StringWriter();
@@ -197,13 +197,13 @@ public class LogStashJsonLayoutTest {
 
         logger.info("Hello World!");
         with(fileWriter.toString())
-            .assertThat("$.source_path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
+            .assertThat("$.path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
     }
 
     @Test
     public void testParentLoggerSourcePath() throws Exception {
         logger.info("Hello World!");
-        with(consoleWriter.toString()).assertThat("$.source_path", nullValue());
+        with(consoleWriter.toString()).assertThat("$.path", nullValue());
 
         // for the file appender there must be log file path in the json
         StringWriter fileWriter = new StringWriter();
@@ -225,8 +225,43 @@ public class LogStashJsonLayoutTest {
 
         testLogger.info("Hello World!");
         with(fileWriter.toString())
-            .assertThat("$.source_path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
+            .assertThat("$.path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
     }
+
+    @Test
+    public void testMultipleParentLoggersSourcePath() throws Exception {
+        logger.removeAllAppenders();
+
+        // for the file appender there must be log file path in the json
+        StringWriter fileWriter = new StringWriter();
+
+        LogStashJsonLayout fileLayout = new LogStashJsonLayout();
+        fileLayout.activateOptions();
+
+        FileAppender fileAppender = spy(new FileAppender());
+        doNothing().when(fileAppender).activateOptions();
+        fileAppender.setWriter(fileWriter);
+        fileAppender.setFile("/tmp/logger.log");
+        fileAppender.setLayout(fileLayout);
+        fileAppender.activateOptions();
+
+        logger.addAppender(fileAppender);
+
+        Logger testLogger = Logger.getLogger(getClass());
+        testLogger.setLevel(Level.INFO);
+        testLogger.setAdditivity(true);
+
+        Logger packageLogger = Logger.getLogger(getClass().getPackage().getName());
+        packageLogger.setLevel(Level.INFO);
+        packageLogger.setAdditivity(true);
+
+        testLogger.info("Hello World");
+        System.out.println(fileWriter.toString());
+
+        with(fileWriter.toString())
+            .assertThat("$.path", equalTo(new File(fileAppender.getFile()).getCanonicalPath()));
+    }
+
 
     @Test
     public void testEscape() throws Exception {
