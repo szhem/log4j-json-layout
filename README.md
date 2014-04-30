@@ -34,7 +34,7 @@ By default the following fields are logged:
             "mdc_key_1": "mdc_val_1"
         },
         "ndc": "ndc_1 ndc_2 ndc_3",
-        "source_host": "vm",
+        "host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -51,7 +51,7 @@ If there is an exception, the logged message will look like the following one:
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "vm",
+        "host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -78,7 +78,7 @@ After that the location will be available in the message
         },
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "vm",
+        "host": "vm",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
@@ -114,7 +114,7 @@ The message will look like the following one:
         "level": "INFO",
         "logger": "root",
         "message": "Hello World",
-        "source_host": "vm",
+        "host": "vm",
         "tags": ["spring", "logstash"],
         "@timestamp": "2013-11-17T11:03:02.025Z",
         "thread": "main",
@@ -133,14 +133,14 @@ log messages are sent to, will also be included into the message:
     log4j.appender.out.maxFileSize=100MB
     log4j.appender.out.maxBackupIndex=10
 
-With such a configuration the message will contain additional `source_path` field
+With such a configuration the message will contain additional `path` field
 
     {
         "level": "ERROR",
         "logger": "root",
         "message": "Hello World!",
-        "source_host": "vm",
-        "source_path": "/tmp/logger.log",
+        "host": "vm",
+        "path": "/tmp/logger.log",
         "@timestamp": "2013-11-17T10:21:41.863Z",
         "thread": "main",
         "@version": "1"
